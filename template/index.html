@@ -2,6 +2,8 @@
 <html lang=en xmlns:th="http://www.thymeleaf.org">
 <head>
   <title>TABS v SPACES</title>
+  <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
+  <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -54,10 +56,20 @@
   </div>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      <!-- add Event Listener "click" to the vote -->
-      // document.getElementById("voteTabs").addEventListener("click", function () {
-      //   vote("TABS");
-      // });
+      // Sign in/out button listener
+      document.getElementById("signInButton").addEventListener("click", function() {
+        toggle();
+      })
+
+      // Tab vote button listener
+      document.getElementById("voteTabs").addEventListener("click", function() {
+         vote("TABS");
+      });
+
+      // Space vote button listener
+      document.getElementById("voteSpaces").addEventListener("click", function() {
+          vote("SPACES");
+      })
     })
   </script>
 </body>

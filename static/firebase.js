@@ -98,12 +98,6 @@ function toggle() {
 }
 
 /**
- * DO NOT ALTER ANY CODE ABOVE THIS COMMENT
- * ++++ ADD YOUR CODE BELOW ++++
- * === VOTE FUNCTION ===
- */
-
-/**
  * Sends the user's vote to the server.
  * @param team
  * @returns {Promise<void>}
@@ -117,10 +111,24 @@ async function vote(team) {
     try {
       const token = await createIdToken();
 
-      /*
-       * ++++ YOUR CODE HERE ++++
-       */
-      window.alert(`Not implemented yet!`);
+      const formData = new URLSearchParams();
+      // Append the team name to the form data
+      formData.append('team', team);
+
+      // Send the vote to the server
+      const response = await fetch('/', { 
+        method: 'POST', // The server endpoint is a POST request
+        headers: { // Add the JWT to the Authorization
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: formData, // The team name is sent in the body
+      });
+
+      if (response.ok) {
+        window.alert(`Vote for ${team} submitted.`);
+        window.location.reload(); // Refresh the page to show the updated results
+      }
 
     } catch (err) {
       console.log(`Error when submitting vote: ${err}`);
