@@ -15,23 +15,37 @@ templates = Jinja2Templates(directory="/app/template")
 db = firestore.Client()
 votes_collection = db.collection("votes")
 
-
 @app.get("/")
 async def read_root(request: Request):
-    # ====================================
-    # ++++ START CODE HERE ++++
-    # ====================================
 
-    # stream all votes; count tabs / spaces votes, and get recent votes
+    # Stream all votes
+    votes = votes_collection.stream()
+    votes_data = []
+    for vote in votes:
+        votes_data.append(vote.to_dict())
+    
+    # Variables to store and return the count of votes
+    tabs_count = 0
+    spaces_count = 0
+    recent_votes = []
 
-    # ====================================
-    # ++++ STOP CODE ++++
-    # ====================================
+    # Count all votes and keep a list of recent votes
+    for vote in votes_data:
+        if vote["team"] == "TABS":
+            tabs_count += 1
+        else:
+            spaces_count += 1
+        recent_votes.append(vote)
+    
+    # Sort recent votes by created_at and get the last 5 votes
+    recent_votes = sorted(recent_votes, key=lambda x: x["time_cast"], reverse=True)[:5]
+
+    # Render the index.html template
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "tabs_count": 0,
-        "spaces_count": 0,
-        "recent_votes": []
+        "tabs_count": tabs_count,
+        "spaces_count": spaces_count,
+        "recent_votes": recent_votes
     })
 
 
@@ -39,14 +53,15 @@ async def read_root(request: Request):
 async def create_vote(team: Annotated[str, Form()]):
     if team not in ["TABS", "SPACES"]:
         raise HTTPException(status_code=400, detail="Invalid vote")
+    
+    # Create a new vote document for Firestore
+    vote_data = {
+        "team": team, # Tab or Space
+        "time_cast": datetime.datetime.utcnow().isoformat() # Timestamp for recent votes sorting
+    }
 
-    # ====================================
-    # ++++ START CODE HERE ++++
-    # ====================================
+    # Add the vote to the Firestore collection
+    votes_collection.add(vote_data)
 
-    # create a new vote document in firestore
-    return {"detail": "Not implemented yet!"}
-
-    # ====================================
-    # ++++ STOP CODE ++++
-    # ====================================
+    # Return a success message
+    return {"detail": "Vote created successfully"}
